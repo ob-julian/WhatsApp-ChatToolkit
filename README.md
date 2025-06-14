@@ -43,3 +43,4 @@ I built this in a few hours to troll some friends because voice messages in a gr
    ```bash
    node .
    ```
+6. Oftentimes, you need to download specific libraries if your system does not have Chromium installed. And even then, you might need to install a few more libraries. If you run into issues, please refer to the [Puppeteer troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
