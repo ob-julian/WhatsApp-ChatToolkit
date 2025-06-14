@@ -34,7 +34,7 @@ client.on('qr', qr => {
 client.on('ready', async () => {
     console.log('Client is ready!');
     console.log(`Logged in as: ${client.info.pushname} (${client.info.wid.user})`);
-    if (config.groupName && config.groupName !== '') {
+    if (config.groupName && config.groupName !== '') {// Rethinking it, saving the group name is unnecessary since it's subject to change. All that's needed is the serialized ID — but if it ain't broke, don't fix it.
         console.log(`You are currently listening to the group: ${config.groupName}`);
         console.log('Do you want to change the configuration? (yes/no, continuing with no in 10 seconds)');
         const timer = setTimeout(() => {
