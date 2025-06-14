@@ -37,3 +37,9 @@ I built this in a few hours to troll some friends because voice messages in a gr
    ```bash
    npm install
    ```
+
+5. Run the script:
+
+   ```bash
+   node .
+   ```
