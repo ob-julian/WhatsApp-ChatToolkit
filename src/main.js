@@ -3,6 +3,7 @@ const qrcode = require('qrcode-terminal');
 const config = require('../config/servers.json');
 const responses = require('../config/responses.json');
 const meResponse = require('../config/me.json');
+const fs = require('fs');
 
 const stdin = process.openStdin();
 stdin.setEncoding('utf8');
@@ -27,7 +28,6 @@ client.on('qr', qr => {
         console.log('New QR Code received, generating terminal QR code...');
     }
     qrCodeTries++;
-   
     qrcode.generate(qr, { small: true });
 });
 
@@ -43,11 +43,7 @@ client.on('ready', async () => {
                 stdin.destroy();
             }
         }, 10000);
-        const answer = await new Promise(resolve => {
-            stdin.once('data', data => {
-                resolve(data.trim().toLowerCase());
-            });
-        });
+        const answer = await getUserInput();
         clearTimeout(timer);
         if (answer === 'yes' || answer === 'y') {
             console.log('Changing configuration...');
@@ -68,14 +64,10 @@ async function changeServerConfiguration() {
     const allGroups = await client.getChats();
     const chatNames = allGroups.map(chat => chat.name);
 
-    let groupName = undefined;
+    let groupName;
     while (!chatNames.includes(groupName)) {
         console.log('Give me the name of the group you want to listen to:');
-        groupName = await new Promise(resolve => {
-            stdin.once('data', data => {
-                resolve(data.trim());
-            });
-        });
+        groupName = await getUserInput();
     }
 
     config.groupName = groupName;
@@ -84,27 +76,20 @@ async function changeServerConfiguration() {
     console.log(`You are now listening to the group: ${groupName}`);
 
     console.log('Do you want to let the bot calculate the current total voice time or do you want to set it manually? (bot/manual)');
-    let voiceTimeMode = undefined;
+    let voiceTimeMode;
     do {
-        voiceTimeMode = await new Promise(resolve => {
-            stdin.once('data', data => {
-                resolve(data.trim().toLowerCase());
-            });
-        });
-        if (['bot', 'manual'].indexOf(voiceTimeMode) === -1) {
+        voiceTimeMode = await getUserInput();
+        if (!['bot', 'manual'].includes(voiceTimeMode)) {
             console.log('Invalid input. Please enter "bot" or "manual".');
         }
-    } while (['bot', 'manual'].indexOf(voiceTimeMode) === -1);
+    } while (!['bot', 'manual'].includes(voiceTimeMode));
     console.log(`You chose to set the voice time mode to: ${voiceTimeMode}`);
 
     if (voiceTimeMode === 'manual') {
         console.log('Please enter the current total voice time in seconds:');
+        let voiceTime;
         do {
-            const voiceTime = await new Promise(resolve => {
-                stdin.once('data', data => {
-                    resolve(data.trim());
-                });
-            });
+            voiceTime = await getUserInput();
             if (!isNaN(voiceTime) && voiceTime >= 0) {
                 config.voiceTime = parseInt(voiceTime, 10);
                 saveConfig();
@@ -122,7 +107,6 @@ async function changeServerConfiguration() {
         if (group) {
             const messages = await group.fetchMessages({ limit: limit });
             console.log(`Found ${messages.length} messages in the group.`);
-
             messages.forEach(message => {
                 if (message.type === 'ptt') {
                     config.voiceTime += parseInt(message.duration, 10) || 0;
@@ -139,7 +123,6 @@ async function changeServerConfiguration() {
 }
 
 function saveConfig() {
-    const fs = require('fs');
     fs.writeFileSync('./config/servers.json', JSON.stringify(config, null, 2));
     console.log('Configuration saved to config file.');
 }
@@ -159,40 +142,6 @@ function getAnswer(addedTime, name) {
         .replace('{secondsOG}', addedTime);
 }
 
-client.on('message', async message => {
-    if (message.type === 'ptt' && message.from === config.groupId) {
-        let authorContact;
-        if (message.author) {
-            authorContact = await client.getContactById(message.author);
-        } else {
-            authorContact = await message.getContact();
-        }
-        const authorName = authorContact.pushname || authorContact.name || 'Ach zefix, warum hat der keinen Namen?';
-        const voiceTime = parseInt(message.duration, 10) || 0;
-        const answer = getAnswer(voiceTime, authorName);
-        message.reply(answer);
-    }
-});
-
-client.on('message_create', async message => {
-    if (message.type === 'ptt' && message.to === config.groupId && message.fromMe) {
-        let authorContact;
-        if (message.author) {
-            authorContact = await client.getContactById(message.author);
-        } else {
-            authorContact = await message.getContact();
-        }
-        const authorName = authorContact.pushname || authorContact.name || 'Ach zefix, warum hat der keinen Namen?';
-        const voiceTime = parseInt(message.duration, 10) || 0;
-        const meLen = Object.keys(meResponse).length;
-        const randomIndex = Math.floor(Math.random() * meLen) + 1;
-        const answer = meResponse[randomIndex + ""]
-            .replace('{name}', authorName)
-            .replace('{secondsOG}', voiceTime);
-        client.sendMessage(message.to, answer);
-    }
-});
-
 
 // Utility: Gaussian distribution random number generator
 function gaussianRandom(mean = 0, stdDev = 1) {
@@ -208,6 +157,50 @@ function getWeightedQuipIndex(seconds, maxNumber = 20, maxLength = 400) {
     const linearMapped = (clampedSeconds / maxLength) * (maxNumber - 1) + 1;
     const noisyIndex = gaussianRandom(linearMapped, 2.5);
     return Math.max(1, Math.min(maxNumber, Math.round(noisyIndex)));
+}
+
+// --- Message handlers ---
+
+client.on('message', async message => {
+    if (message.type === 'ptt' && message.from === config.groupId) {
+        const authorName = await getAuthorName(message);
+        const voiceTime = parseInt(message.duration, 10) || 0;
+        const answer = getAnswer(voiceTime, authorName);
+        message.reply(answer);
+    }
+});
+
+client.on('message_create', async message => {
+    if (message.type === 'ptt' && message.to === config.groupId && message.fromMe) {
+        const authorName = await getAuthorName(message);
+        const voiceTime = parseInt(message.duration, 10) || 0;
+        const meLen = Object.keys(meResponse).length;
+        const randomIndex = Math.floor(Math.random() * meLen) + 1;
+        const answer = meResponse[randomIndex + ""]
+            .replace('{name}', authorName)
+            .replace('{secondsOG}', voiceTime);
+        client.sendMessage(message.to, answer);
+    }
+});
+
+// --- Common utility methods ---
+
+function getUserInput() {
+    return new Promise(resolve => {
+        stdin.once('data', data => {
+            resolve(data.trim().toLowerCase());
+        });
+    });
+}
+
+async function getAuthorName(message) {
+    let authorContact;
+    if (message.author) {
+        authorContact = await client.getContactById(message.author);
+    } else {
+        authorContact = await message.getContact();
+    }
+    return authorContact.pushname || authorContact.name || 'Ach zefix, warum hat der keinen Namen?';
 }
 
 client.initialize();
