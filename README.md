@@ -44,3 +44,46 @@ I built this in a few hours to troll some friends because voice messages in a gr
    node .
    ```
 6. Oftentimes, you need to download specific libraries if your system does not have Chromium installed. And even then, you might need to install a few more libraries. If you run into issues, please refer to the [Puppeteer troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
+
+
+## Extending the Script
+
+This project is designed to be easily extendable. 
+
+### Commands
+
+To add a new command, simply create a new file in the `commands` directory. Each command file should export an object with the following properties:
+
+```javascript
+{
+  name: 'commandName', // The command's trigger word (e.g., 'status')
+  description: 'Description of the command', // A short explanation of what the command does
+  restrictions: {
+      self: true,        // If true, only messages sent by yourself (the bot account) can trigger this command
+      group: true,       // If true, the command can be used in group chats
+      private: true,     // If true, the command can be used in private (1:1) chats
+      selfMessage: true  // If true, the command can only be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
+  },
+  execute: (client, message, config) => {
+    // Your command logic here
+  }
+}
+```
+**Note:**  
+- You can set multiple restrictions to control where and by whom the command can be executed.
+- `selfMessage` is exclusive: if set to `true`, the command will only work in your self-chat, regardless of the other settings.
+- In theory, you could achieve the same effect as `selfMessage` by setting `self` to true and all other restrictions to false. However, to avoid confusion and make the intent clearer, `selfMessage` is implemented as an exclusive option.
+
+### client.on interaction
+
+To add a new interaction handler, create a new file in the `client_on` directory. Each file should export a object with the following properties:
+
+```javascript
+{
+  event: 'message_create', // The event to listen for (e.g., 'message_create', 'ready' ...)
+  handler: (client, message, config) => {
+    // Your interaction logic here
+  }
+}
+```
+

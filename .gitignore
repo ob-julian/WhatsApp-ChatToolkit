@@ -2,3 +2,4 @@
 .wwebjs_cache
 node_modules
 test.js
+test_messages
