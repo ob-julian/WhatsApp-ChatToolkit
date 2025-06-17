@@ -1,11 +1,10 @@
-const utility = require('../utility.js');
 const meResponse = require('../../config/me.json');
 
 module.exports = {
     event: 'message_create',
     handler: async (message, client, config) => {
         if (message.type === 'ptt' && message.to === config.groupId && message.fromMe) {
-            const authorName = await utility.getAuthorName(client, message);
+            const authorName = client.info.pushname;
             const voiceTime = parseInt(message.duration, 10) || 0;
             const meLen = Object.keys(meResponse).length;
             const randomIndex = Math.floor(Math.random() * meLen) + 1;

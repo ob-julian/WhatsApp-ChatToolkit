@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 const config = require('./config.js');
-const utility = require('./utility.js');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
