@@ -3,3 +3,5 @@
 node_modules
 test.js
 test_messages
+temp
+config/secreats.json
