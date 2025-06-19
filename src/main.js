@@ -31,6 +31,7 @@ fs.readdirSync(commandsPath).forEach(file => {
         if (commandModule.name && typeof commandModule.handler === 'function') {
             client.on('message_create', async message => {
                 if (message.body.startsWith('!') && message.body.slice(1).startsWith(commandModule.name)) {
+                    const arguments = message.body.slice(commandModule.name.length + 2).trim().split(/\s+/);
                     if (!commandModule.restrictions) return; // Ensure restrictions are defined
 
                     const isSelfMessage = message._data.id.self || false;
@@ -50,7 +51,7 @@ fs.readdirSync(commandsPath).forEach(file => {
                         (commandModule.restrictions.private &&  !isPrivateMessage)) return; 
                         
                     }
-                    await commandModule.handler(message, client, config);
+                    await commandModule.handler(message, client, config, arguments);
                 }
             });
         }
