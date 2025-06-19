@@ -39,19 +39,15 @@ fs.readdirSync(commandsPath).forEach(file => {
                     const isGroupMessage = message._data.id.participant || false;
                     const isPrivateMessage = !isGroupMessage && !isSelfMessage;
 
-                    // If selfMessage is true, only allow in self chat (id.self === true)
-                    if (commandModule.restrictions.selfMessage) {
-                        if (!isSelfMessage) return;
-                    } else {
-                        // Needs to be extended with OR if ever extended with stuff like admin or owner
-                        if (commandModule.restrictions.self && !isFromMe) return;
-                        
-                        // Using OR to ensure the command can be used in group and private messages simultaneously
-                        if ((commandModule.restrictions.group && !isGroupMessage) ||
-                        (commandModule.restrictions.private &&  !isPrivateMessage)) return; 
-                        
+                    // Needs to be extended with OR if ever extended with stuff like admin or owner
+                    if (commandModule.restrictions.self && !isFromMe) return;
+                    
+                    // Using OR to ensure the command can be used in group and private messages simultaneously
+                    if ((commandModule.restrictions.group && isGroupMessage) ||
+                    (commandModule.restrictions.private && isPrivateMessage) ||
+                    (commandModule.restrictions.selfMessage && isSelfMessage)) {
+                        await commandModule.handler(message, client, config, arguments);
                     }
-                    await commandModule.handler(message, client, config, arguments);
                 }
             });
         }

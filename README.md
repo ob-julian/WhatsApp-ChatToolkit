@@ -62,17 +62,13 @@ To add a new command, simply create a new file in the `commands` directory. Each
       self: true,        // If true, only messages sent by yourself (the bot account) can trigger this command
       group: true,       // If true, the command can be used in group chats
       private: true,     // If true, the command can be used in private (1:1) chats
-      selfMessage: true  // If true, the command can only be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
+      selfMessage: true  // If true, the command can be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
   },
   execute: (client, message, config, args) => {
     // Your command logic here
   }
 }
 ```
-**Note:**  
-- You can set multiple restrictions to control where and by whom the command can be executed.
-- `selfMessage` is exclusive: if set to `true`, the command will only work in your self-chat, regardless of the other settings.
-- In theory, you could achieve the same effect as `selfMessage` by setting `self` to true and all other restrictions to false. However, to avoid confusion and make the intent clearer, `selfMessage` is implemented as an exclusive option.
 
 ### client.on interaction
 
