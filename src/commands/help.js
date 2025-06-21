@@ -32,7 +32,6 @@ module.exports = {
         selfMessage: true
     },
     handler: async (message, client, config) => {
-        console.log(`Received help command from ${message.from}`);
         const commands = loadCommands();
         let helpText = '*Available Commands:*\n\n';
         commands.forEach(cmd => {
