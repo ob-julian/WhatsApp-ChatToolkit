@@ -26,7 +26,7 @@ function getWeightedQuipIndex(seconds, maxNumber = 20, maxLength = 400) {
     return Math.max(1, Math.min(maxNumber, Math.round(noisyIndex)));
 }
 
-function getAnswer(addedTime, name) {
+function getAnswer(config, addedTime, name) {
     config.voiceTime += addedTime;
     config.save();
     const responseOptions = Object.keys(responses).length;

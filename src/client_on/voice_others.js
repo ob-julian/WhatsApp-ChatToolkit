@@ -6,7 +6,7 @@ module.exports = {
         if (message.type === 'ptt' && message.from === config.groupId) {
             const authorName = await utility.getAuthorName(client, message);
             const voiceTime = parseInt(message.duration, 10) || 0;
-            const answer = utility.getAnswer(voiceTime, authorName);
+            const answer = utility.getAnswer(config, voiceTime, authorName);
             message.reply(answer);
         }
     }

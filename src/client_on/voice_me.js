@@ -11,6 +11,8 @@ module.exports = {
             const answer = meResponse[randomIndex + ""]
                 .replace('{name}', authorName)
                 .replace('{secondsOG}', voiceTime);
+            config.voiceTime += voiceTime;
+            config.save();
             client.sendMessage(message.to, answer);
         }
     }
