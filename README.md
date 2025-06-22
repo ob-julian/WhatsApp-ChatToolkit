@@ -9,12 +9,23 @@ I built this in a few hours to troll some friends because voice messages in a gr
 
 ## Features
 
+### Original Purpose
 * Tracks the duration and count of voice messages in **one** WhatsApp chat or group.
 * Sends reminders to users about their voice message usage.
-* Easy setup and configuration.
 * Uses lighthearted sarcasm.
-* Respons messages are customizable via 2 config files.
-* Responsive are at tthe moment only in German, but you can easily replace them with your own.
+* Response messages are customizable via 2 config files.
+* Responses are at the moment only in German, but you can easily replace them with your own.
+
+### Additional Features
+
+* Multitude of commands to extend the bot's functionality.
+> Use !help in a self message to see a list of available commands.
+
+### Architectural Features
+* Easy setup and configuration.
+* Modular design for easy extension.
+* Automatic injection of commands and event handlers as long as they follow the naming and structure conventions.
+
 
 ## Installation
 
@@ -72,7 +83,7 @@ To add a new command, simply create a new file in the `commands` directory. Each
 
 ### client.on interaction
 
-To add a new interaction handler, create a new file in the `client_on` directory. Each file should export a object with the following properties:
+To add a new interaction handler, create a new file in the `client_on` directory. Each file should export an object with the following properties:
 
 ```javascript
 {
