@@ -1,6 +1,9 @@
 # WhatsApp-ChatToolkit (originally WhatsApp-SprachnachrichtCounter but it has grown beyond just counting voice messages)
 
-A small script that reminds users in certain WhatsApp chats how much of others’ time they consume with voice messages.
+A small script that originally reminded users in certain WhatsApp chats how much of others’ time they consume with voice messages. \
+It still does that, but it now also has Commands and other features to extend the bot's functionality.
+
+All in a modular and easy-to-extend way.
 
 ## Disclaimer
 
