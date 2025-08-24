@@ -4,7 +4,7 @@
   "description": "A small script that reminds users in certain chats how much of others’ time they consume with voice messages.",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "WhatsApp"
@@ -14,7 +14,13 @@
   "type": "commonjs",
   "dependencies": {
     "inquirer": "^12.6.3",
+    "npm-force-resolutions": "^0.0.10",
+    "puppeteer": "^24.17.0",
+    "puppeteer-core": "^24.17.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.30.0"
+    "whatsapp-web.js": "^1.32.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5"
   }
 }

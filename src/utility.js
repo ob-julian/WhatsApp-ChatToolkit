@@ -41,7 +41,19 @@ function getAnswer(config, addedTime, name) {
         .replace('{secondsOG}', addedTime);
 }
 
+function sendMessageAtDate(client, chatId, message, date) {
+    const delay = date.getTime() - Date.now();
+    if (delay > 0) {
+        setTimeout(() => {
+            client.sendMessage(chatId, message);
+        }, delay);
+    } else {
+        client.sendMessage(chatId, message);
+    }
+}
+
 module.exports = {
     getAuthorName,
-    getAnswer
+    getAnswer,
+    sendMessageAtDate
 };

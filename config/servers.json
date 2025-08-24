@@ -1,4 +1,21 @@
 {
-  "voiceTime": 0,
-  "groupId": ""
+  "voiceTime": 6,
+  "groupId": "4915901747858@c.us",
+  "scheduleMessages": [
+    {
+      "chatID": "4915111132023@c.us",
+      "finalMessage": "Es is 14:05",
+      "scheduledTime": "2025-08-25T12:05:00.000Z"
+    },
+    {
+      "chatID": "4915111132023@c.us",
+      "finalMessage": "Es is 14:10",
+      "scheduledTime": "2025-08-24T12:10:00.000Z"
+    },
+    {
+      "chatID": "4368120432707@c.us",
+      "finalMessage": "whefiwhru uirhg 9uieoi hieh4r 09ogih0i3j 03ih 0",
+      "scheduledTime": "2025-08-24T12:15:00.000Z"
+    }
+  ]
 }
