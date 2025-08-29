@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const configPath = path.join(__dirname, '..', 'config', 'servers.json');
+const configPath = path.join(__dirname, '..', 'config', 'config_save.json');
 
 class Config {
     constructor() {

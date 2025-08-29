@@ -41,14 +41,23 @@ function getAnswer(config, addedTime, name) {
         .replace('{secondsOG}', addedTime);
 }
 
-function sendMessageAtDate(client, chatId, message, date) {
+function sendMessageAtDate(client, chatId, message, date, config) {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
     const delay = date.getTime() - Date.now();
     if (delay > 0) {
         setTimeout(() => {
-            client.sendMessage(chatId, message);
+            helper();
         }, delay);
     } else {
+        helper();
+    }
+    function helper() {
         client.sendMessage(chatId, message);
+        //removing message
+        config.scheduledMessages = config.scheduledMessages.filter(scheduled => !(scheduled.chatID === chatId && scheduled.finalMessage === message && scheduled.scheduledTime === date.getTime()));
+        config.save();
     }
 }
 

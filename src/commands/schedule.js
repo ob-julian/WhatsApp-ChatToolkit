@@ -16,11 +16,9 @@ module.exports = {
 
 async function scheduleMessage(message_obj, client, config, args) {
     const textMessage = args.join(' ');
-    console.log(`Parsing schedule command: ${textMessage}`);
     const regex = /^"(?<message>(?:[^"\\]|\\.)+)"\s+to\s+"(?<target>(?:[^"\\]|\\.)+)"\s+(?:(?:at\s+(?<hhmm>(?:[01]?\d|2[0-3]):[0-5]\d))|(?:in\s+(?<amount>\d+)\s*(?<unit>minutes?|hours?|days?)))\s*$/i;
 
     const match = textMessage.match(regex);
-    console.log(match);
     if (match) {
         const { message, target, hhmm, amount, unit } = match.groups;
         
@@ -40,13 +38,13 @@ async function scheduleMessage(message_obj, client, config, args) {
         // Schedule the message using the extracted parameters
         const scheduledTime = hhmm ? convertAtToDate(hhmm) : convertToToDate(amount, unit);
         const finalMessage = message.replace(/\\"/g, '"');
-        if (!(config && config.scheduleMessages)) {
-            config.scheduleMessages = [];
+        if (!(config && config.scheduledMessages)) {
+            config.scheduledMessages = [];
         }
-        config.scheduleMessages.push({ chatID, finalMessage, scheduledTime });
+        config.scheduledMessages.push({ chatID, finalMessage, scheduledTime: scheduledTime.getTime() });
         config.save();
 
-        utility.sendMessageAtDate(client, chatID, finalMessage, scheduledTime);
+        utility.sendMessageAtDate(client, chatID, finalMessage, scheduledTime, config);
         message_obj.reply(`Message scheduled to be sent to "${target}" at ${scheduledTime.toLocaleString()}.`);
         return true;
     }
