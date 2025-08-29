@@ -1,4 +1,5 @@
 const responses = require('../config/responses.json');
+const { MessageMedia } = require('whatsapp-web.js');
 
 async function getAuthorName(client, message) {
     let authorContact;
@@ -41,23 +42,33 @@ function getAnswer(config, addedTime, name) {
         .replace('{secondsOG}', addedTime);
 }
 
-function sendMessageAtDate(client, chatId, message, date, config) {
-    if (!(date instanceof Date)) {
-        date = new Date(date);
+async function sendMessageAtDate(client, config, chatID, text, date, media) {
+    const msUntil = date.getTime ? date.getTime() - Date.now() : date - Date.now();
+    if (msUntil <= 0) {
+        // send immediately if date is in the past
+        return await _sendNow(client, chatID, text, media);
     }
-    const delay = date.getTime() - Date.now();
-    if (delay > 0) {
-        setTimeout(() => {
-            helper();
-        }, delay);
-    } else {
-        helper();
-    }
-    function helper() {
-        client.sendMessage(chatId, message);
-        //removing message
-        config.scheduledMessages = config.scheduledMessages.filter(scheduled => !(scheduled.chatID === chatId && scheduled.finalMessage === message && scheduled.scheduledTime === date.getTime()));
-        config.save();
+    setTimeout(async () => {
+        await _sendNow(client, chatID, text, media);
+        // removing from config.scheduledMessages here otherwise it will be sent again after every restart
+        if (config && Array.isArray(config.scheduledMessages)) {
+            config.scheduledMessages = config.scheduledMessages.filter(item => !(item.chatID === chatID && item.scheduledTime === date.getTime() && item.finalMessage === text));
+            config.save();
+        }
+    }, msUntil);
+}
+
+async function _sendNow(client, chatID, text, media) {
+    try {
+        if (media && media.data) {
+            // media.data expected to be base64 string
+            const messageMedia = new MessageMedia(media.mimetype, media.data, media.filename);
+            return client.sendMessage(chatID, messageMedia, { caption: text });
+        } else {
+            return client.sendMessage(chatID, text);
+        }
+    } catch (err) {
+        console.error('Failed to send scheduled message:', err);
     }
 }
 

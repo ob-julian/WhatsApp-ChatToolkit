@@ -35,17 +35,36 @@ async function scheduleMessage(message_obj, client, config, args) {
         }
         const chatID = targetChat.id._serialized;
 
+        // --- NEW: handle media attachment (only first attachment supported) ---
+        let mediaData = null;
+        try {
+            if (message_obj && message_obj.hasMedia) {
+                const downloaded = await message_obj.downloadMedia();
+                if (downloaded && downloaded.data) {
+                    mediaData = {
+                        data: downloaded.data,          // base64
+                        mimetype: downloaded.mimetype,
+                        filename: downloaded.filename || `attachment.${downloaded.mimetype.split('/')[1] || 'bin'}`
+                    };
+                }
+            }
+        } catch (err) {
+            console.error('Failed to download attached media for scheduling:', err);
+            // continue without media
+        }
+
         // Schedule the message using the extracted parameters
         const scheduledTime = hhmm ? convertAtToDate(hhmm) : convertToToDate(amount, unit);
         const finalMessage = message.replace(/\\"/g, '"');
         if (!(config && config.scheduledMessages)) {
             config.scheduledMessages = [];
         }
-        config.scheduledMessages.push({ chatID, finalMessage, scheduledTime: scheduledTime.getTime() });
+        config.scheduledMessages.push({ chatID, finalMessage, scheduledTime: scheduledTime.getTime(), media: mediaData });
         config.save();
 
-        utility.sendMessageAtDate(client, chatID, finalMessage, scheduledTime, config);
-        message_obj.reply(`Message scheduled to be sent to "${target}" at ${scheduledTime.toLocaleString()}.`);
+        // pass media to utility so it can send a media message with caption
+        utility.sendMessageAtDate(client, config, chatID, finalMessage, scheduledTime, mediaData);
+        message_obj.reply(`Message scheduled to be sent to "${target}" at ${scheduledTime.toLocaleString()}.${mediaData ? ' (Includes attached media)' : ''}`);
         return true;
     }
     message_obj.reply('Invalid command format. Please use: `!schedule "<message>" to "<contact or group>" at/in <time>`');
