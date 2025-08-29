@@ -27,7 +27,6 @@ class Config {
             }
         }
         fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
-        console.log('Configuration saved to config file.');
     }
 
     reload() {
