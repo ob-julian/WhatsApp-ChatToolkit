@@ -1,7 +1,7 @@
 {
-  "name": "whatsapp-sprachnachrichtcounter",
+  "name": "whatsapp-chat-toolkit",
   "version": "1.0.0",
-  "description": "A small script that reminds users in certain chats how much of others’ time they consume with voice messages.",
+  "description": "A toolkit for enhancing WhatsApp chat interactions. Supports usage of commands and general automation hooks.",
   "main": "src/main.js",
   "scripts": {
     "test": "jest"
@@ -14,7 +14,6 @@
   "type": "commonjs",
   "dependencies": {
     "inquirer": "^12.6.3",
-    "npm-force-resolutions": "^0.0.10",
     "puppeteer": "^24.17.0",
     "puppeteer-core": "^24.17.0",
     "qrcode-terminal": "^0.12.0",
