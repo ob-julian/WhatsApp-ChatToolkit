@@ -8,6 +8,6 @@ module.exports = {
         selfMessage: true
     },
     handler: async (message, client, config) => {
-        client.sendMessage(message.to, 'I am up and running!');
+        message.reply('I am up and running!');
     }
 };
