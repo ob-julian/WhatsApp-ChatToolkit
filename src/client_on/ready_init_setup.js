@@ -38,7 +38,7 @@ async function handleExistingGroup(client, config) {
         console.log('Changing configuration...');
         await changeServerConfiguration(client, config);
     } else if (answer === 'Timeout') {
-        console.log('\nTimeout reached, continuing with the current configuration...');
+        console.log('\nTimeout reached, continuing with the current configuration (Please ignore any open prompt).');
     } else {
         console.log('Continuing with the current configuration...');
     }
