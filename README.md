@@ -78,7 +78,7 @@ To add a new command, simply create a new file in the `commands` directory. Each
       private: true,     // If true, the command can be used in private (1:1) chats
       selfMessage: true  // If true, the command can be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
   },
-  execute: (client, message, config, args) => {
+  execute: (message, client, config, args) => {
     // Your command logic here
   }
 }
