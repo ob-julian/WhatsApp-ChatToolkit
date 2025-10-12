@@ -72,8 +72,44 @@ async function _sendNow(client, chatID, text, media) {
     }
 }
 
+function getMessageContext(message) {
+    const isFromMe = message.fromMe || (message._data && message._data.id && message._data.id._serialized && message._data.id.self) || false;
+    const isGroupMessage = !!(message._data && message._data.id && message._data.id.participant);
+    const isSelfMessage = (message._data && message._data.id && message._data.id.self) || false;
+    const isPrivateMessage = !isGroupMessage && !isSelfMessage;
+    return { isFromMe, isGroupMessage, isSelfMessage, isPrivateMessage };
+}
+
+function canUseCommand(cmd, message) {
+    // as stated in the readme, restrictions are:
+    // self: only the bot account itself can use the command
+    // group: allowed in groups
+    // private: allowed in private chats
+    // selfMessage: allowed in the bot's own "chat"
+
+    const msgCtx = getMessageContext(message);
+
+    // basic sanity checks
+    if (!cmd || !message) return false;
+    
+    // no restrictions at all, allow everywhere
+    if (!cmd.restrictions) return true;
+
+    // if its not from the bot itself and self-only, reject immediately
+    if (cmd.restrictions.self && !msgCtx.isFromMe) return false;
+
+    // need to be OR because multiple contexts can be allowed
+    return (
+        (cmd.restrictions.group && msgCtx.isGroupMessage) ||
+        (cmd.restrictions.private && msgCtx.isPrivateMessage) ||
+        (cmd.restrictions.selfMessage && msgCtx.isSelfMessage)
+    );
+}
+
 module.exports = {
     getAuthorName,
     getAnswer,
-    sendMessageAtDate
+    sendMessageAtDate,
+    //getMessageContext,
+    canUseCommand
 };

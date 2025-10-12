@@ -44,7 +44,19 @@ function extractMessage(message) {
 
 module.exports = {
     name: 'repeat',
-    description: 'Usage: !repeat <chat_name>\nLooks for patterns in the last 4 chat messages and if both parties are repeating the same message (e.g. me: "hello", you: "hi" and then me: "hi", you: "hello"), it will repeat the last message you sent to the chat every time the other person sends its last message. Automatically stops when the one of the parties sends a different message.',
+        description: 'Start automatic message repeating in a chat when a repeating pattern is detected.',
+        help: '*Usage*\n' +
+            '```\n!repeat "Chat Name"\n```\n' +
+            '\n*Description*\n' +
+            'Analyzes the last 4 messages in the named chat to detect a repeating pattern between both parties. If a pattern is found, the bot will automatically repeat your last message each time the other person sends theirs.\n' +
+            '\n*Details*\n' +
+            '- The command expects the full chat name (use quotes if the name contains spaces).\n' +
+            '- Only text messages are supported for the repeating action; stickers are detected but not repeated.\n' +
+            '- The repeat behavior is persisted in the config so it survives restarts.\n' +
+            '\n*Examples*\n' +
+            '```\n!repeat "Alice"\n```\n' +
+            '\n*Options*\n' +
+            '- `-h, --help, help`   Show this help text.\n',
     restrictions: {
         self: true,
         group: false,

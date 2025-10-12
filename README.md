@@ -90,10 +90,14 @@ To add a new interaction handler, create a new file in the `client_on` directory
 
 ```javascript
 {
-  event: 'message_create', // The event to listen for (e.g., 'message_create', 'ready' ...)
-  handler: (client, message, config) => {
-    // Your interaction logic here
-  }
+   event: 'message_create', // The event to listen for (e.g., 'message_create', 'ready' ...)
+   handler: ((...args), client, config, commands) => {
+      // Your interaction logic here
+   }
 }
 ```
-
+> To handler: \
+  `(...args)` are the arguments provided by the event, e.g., for 'message_create' it's (message). \
+  `client` is the WhatsApp client instance. \
+   `config` is the loaded configuration object from config.json. \
+   `commands` is the map of loaded commands, in case you want to access them.

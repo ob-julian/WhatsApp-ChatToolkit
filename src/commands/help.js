@@ -1,42 +1,55 @@
 const fs = require('fs');
 const path = require('path');
-
-const commandsPath = __dirname;
-let cachedCommands = null;
-
-// Cache command info at module load
-function loadCommands() {
-    if (cachedCommands) return cachedCommands;
-    cachedCommands = [];
-    const files = fs.readdirSync(commandsPath);
-    files.forEach(file => {
-        if (file.endsWith('.js')) {
-            const cmd = require(path.join(commandsPath, file));
-            if (cmd.name && cmd.description) {
-                cachedCommands.push({ name: cmd.name, description: cmd.description });
-            }
-            // to save memory, we can also delete the module reference
-            delete require.cache[require.resolve(path.join(commandsPath, file))];
-        }
-    });
-    return cachedCommands;
-}
+const utility = require('../utility');
 
 module.exports = {
     name: 'help',
-    description: 'List all available commands',
+    description: 'Show available commands or detailed help for a specific command.',
+        help: '*Usage*\n' +
+                '```\n!help [command]\n```\n' +
+                '\n*Description*\n' +
+                'List available commands or show extended help for a specific command. You can also use `!<command> -h`, `!<command> --help` or `!<command> help` for quick access.\n',
     restrictions: {
-        self: true,
-        group: true,
-        private: true,
-        selfMessage: true
+        // help is allowed everywhere, but only shows commands the user can actually use
     },
-    handler: async (message, client, config) => {
-        const commands = loadCommands();
-        let helpText = '*Available Commands:*\n\n';
-        commands.forEach(cmd => {
-            helpText += `*${cmd.name}*: ${cmd.description}\n`;
-        });
-        client.sendMessage(message.to, helpText.trim());
+    // handler receives (message, client, config, args, commands)
+    handler: async (message, client, config, args = [], commands = new Map()) => {
+
+        // use utility to check command permissions
+        function commandAllowed(mod) {
+            return utility.canUseCommand(mod, message);
+        }
+
+        if (!args || args.length === 0) {
+            // list commands filtered by allowed context
+            let reply = '*Available commands:*\n\n';
+            for (const [name, mod] of commands.entries()) {
+                if (commandAllowed(mod) === false) continue;
+                const desc = mod.description || (mod.help ? (typeof mod.help === 'string' ? mod.help.split('\n')[0] : '') : '');
+                reply += `*${name}*: ${desc || 'No description'}\n`;
+            }
+            // if nothing available, inform the user
+            if (reply.trim() === '*Available commands:*') {
+                await message.reply('No commands available for your current context.');
+                return;
+            }
+            await message.reply(reply);
+            return;
+        }
+
+        const target = args[0].toLowerCase();
+        const mod = commands.get(target);
+        if (!mod) {
+            await message.reply(`No such command: ${target}`);
+            return;
+        }
+
+        if (commandAllowed(mod) === false) {
+            await message.reply('You do not have access to this command in the current context.');
+            return;
+        }
+
+        const helpText = mod.help || mod.description || 'No extended help available for this command.';
+        await message.reply(`Help for !${target}:\n${helpText}`);
     }
 };

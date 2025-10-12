@@ -2,7 +2,18 @@ const utility = require('../utility.js');
 
 module.exports = {
     name: 'schedule',
-    description: 'Schedule a message, usage: `!schedule "<message>" to "<contact or group>" at/in <time>`. "In x minutes/hours/days" or "at HH:MM" are supported.',
+        description: 'Schedule a message to be sent later.',
+        help: '*Usage*\n' +
+            '```\n!schedule "<message>" to "<contact or group>" at|in <time>\n```\n' +
+            '\n*Examples*\n' +
+            '```\n!schedule "Hello" to "Alice" at 09:00\n!schedule "Reminder" to "Family Group" in 30 minutes\n```\n' +
+            '\n*Details*\n' +
+            '- Message must be wrapped in double quotes.\n' +
+            '- Use _to "<contact or group>"_ to select the recipient by chat name or chat ID.\n' +
+            '- Time can be specified as _at HH:MM_ (24h) or _in <amount> minutes|hours|days_.\n' +
+            '- If you attach a media file to the scheduling message, the media (first attachment) will be sent with the scheduled message.\n' +
+            '\n*Options*\n' +
+            '- `-h, --help, help`  Show this help text.\n',
     restrictions: {
         self: true,
         group: false,
