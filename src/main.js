@@ -18,9 +18,9 @@ const client = new Client({
 });
 
 // --- Commands loading & global dispatcher ---
+const commands = new Map(); // global command storage
 try {
     const commandsPath = path.join(__dirname, 'commands');
-    const commands = new Map();
 
     fs.readdirSync(commandsPath).forEach(file => {
         if (file.endsWith('.js')) {
@@ -47,15 +47,16 @@ try {
             const handlerModule = require(path.join(handlersPath, file));
             if (handlerModule.event && typeof handlerModule.handler === 'function') {
                 client.on(handlerModule.event, (...args) => handlerModule.handler(...args, client, config, commands));
+            } else {
+                console.warn(`Handler file ${file} missing required exports (event, handler).`);
             }
         }
     });
 
     console.log('Finished loading client_on handler modules.');
 } catch (err) {
-    console.error('Error re-loading client_on handlers with commands:', err);
+    console.error('Error loading client_on handlers:', err);
 }
-
 
 async function init() {
     await client.initialize();
