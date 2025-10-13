@@ -23,7 +23,7 @@ module.exports = {
             return;
         }
         // ensure the quoted message is actually from the bot and not the player trying to cheat
-        if (quotedMsg.author !== message.to) {
+        if (quotedMsg.from !== message.to) {
             // player trying to fool the bot by using a custom board
             message.reply('Did you really think you could use a custom board? I actually check that you are replying to my message! Pfft 😄');
             return;
@@ -34,11 +34,11 @@ module.exports = {
             return;
         }
 
-        // first edit board then reply to it otherwise the reply won't reflect the new board 
-        await quotedMsg.edit(utility.drawTTTBoard(new_Board)).catch((err) => {
+        // first edit board then reply to it otherwise the reply won't reflect the new board
+        const editedmsg = await quotedMsg.edit(utility.drawTTTBoard(new_Board)).catch((err) => {
             failSafeReply();
         });
-        if (quotedText === quotedMsg.body.trim()) {
+        if (quotedText === editedmsg.body.trim()) {
             // edit failed, so we sent a new message instead
             failSafeReply();
         }
