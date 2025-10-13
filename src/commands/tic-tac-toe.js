@@ -3,6 +3,7 @@ const tttQuips = require('../../config/tictactoe-quips.json');
 
 module.exports = {
     name: 'TicTacToe',
+    aliases: ['ttt'],
     description: 'Play a game of Tic Tac Toe.',
     help: '*Usage*\n' +
             '```\n!tictactoe [initial_move]\n```' +
@@ -15,10 +16,11 @@ module.exports = {
             '- You must reply to the bot\'s message to make a move.\n' +
             '- To start a new game, use `!tictactoe` again.\n',
     restrictions: {
-        self: false,
-        group: false,
-        private: true,
-        selfMessage: true
+        onlySelf: false,
+        allowGroup: false,
+        allowPrivate: true,
+        allowSelfMessage: true,
+        onlyContacts: true
     },
 
     // handler receives (message, client, config, args, commands)

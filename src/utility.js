@@ -80,7 +80,7 @@ function getMessageContext(message) {
     return { isFromMe, isGroupMessage, isSelfMessage, isPrivateMessage };
 }
 
-function canUseCommand(cmd, message) {
+async function canUseCommand(cmd, message, client) {
     // as stated in the readme, restrictions are:
     // self: only the bot account itself can use the command
     // group: allowed in groups
@@ -95,14 +95,35 @@ function canUseCommand(cmd, message) {
     // no restrictions at all, allow everywhere
     if (!cmd.restrictions) return true;
 
-    // if its not from the bot itself and self-only, reject immediately
-    if (cmd.restrictions.self && !msgCtx.isFromMe) return false;
+    // if it's not from the bot itself and onlySelf is set, reject immediately
+    if (cmd.restrictions.onlySelf && !msgCtx.isFromMe) return false;
+
+    // onlyContacts: require that the other party is saved in our contacts.
+    if (cmd.restrictions.onlyContacts) {
+        try {
+            // if message comes from the bot itself, it's allowed
+            if (!msgCtx.isFromMe) {
+                // obtain contact object for the sender
+                let otherContact = null;
+                if (message.getContact) {
+                    otherContact = await message.getContact();
+                } else if (client && client.getContactById) {
+                    otherContact = await client.getContactById(message.from);
+                }
+                if (!otherContact || !otherContact.isMyContact) return false;
+            }
+        } catch (err) {
+            // On error conservatively deny access
+            console.error('Error while checking onlyContacts restriction:', err);
+            return false;
+        }
+    }
 
     // need to be OR because multiple contexts can be allowed
     return (
-        (cmd.restrictions.group && msgCtx.isGroupMessage) ||
-        (cmd.restrictions.private && msgCtx.isPrivateMessage) ||
-        (cmd.restrictions.selfMessage && msgCtx.isSelfMessage)
+        (cmd.restrictions.allowGroup && msgCtx.isGroupMessage) ||
+        (cmd.restrictions.allowPrivate && msgCtx.isPrivateMessage) ||
+        (cmd.restrictions.allowSelfMessage && msgCtx.isSelfMessage)
     );
 }
 

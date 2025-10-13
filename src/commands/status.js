@@ -9,10 +9,10 @@ module.exports = {
             '- No arguments are required.\n' +
             '- Intended for quick health checks.\n',
     restrictions: {
-        self: true,
-        group: false,
-        private: false,
-        selfMessage: true
+        onlySelf: true,
+        allowGroup: false,
+        allowPrivate: false,
+        allowSelfMessage: true
     },
     handler: async (message, client, config) => {
         message.reply('I am up and running!');

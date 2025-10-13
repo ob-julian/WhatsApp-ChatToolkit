@@ -39,7 +39,7 @@ module.exports = {
                 }
             }
 
-            if (!utility.canUseCommand(cmd, message)) return;
+            if (!await utility.canUseCommand(cmd, message, client)) return;
 
             await cmd.handler(message, client, config, args);
         } catch (err) {

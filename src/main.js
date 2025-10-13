@@ -27,7 +27,25 @@ try {
             const commandModule = require(path.join(commandsPath, file));
             if (commandModule.name && typeof commandModule.handler === 'function') {
                 // store command for global dispatcher
-                commands.set(commandModule.name.toLowerCase(), commandModule);
+                const primary = commandModule.name.toLowerCase();
+                if (commands.has(primary)) {
+                    console.warn(`Command name conflict: ${primary} already registered, skipping ${file}`);
+                } else {
+                    commands.set(primary, commandModule);
+                }
+
+                // register aliases if provided (array of strings)
+                if (Array.isArray(commandModule.aliases)) {
+                    for (const a of commandModule.aliases) {
+                        if (!a || typeof a !== 'string') continue;
+                        const alias = a.toLowerCase();
+                        if (commands.has(alias)) {
+                            console.warn(`Alias conflict: ${alias} already registered, skipping alias from ${file}`);
+                        } else {
+                            commands.set(alias, commandModule);
+                        }
+                    }
+                }
             } else {
                 console.warn(`Command file ${file} missing required exports (name, handler).`);
             }

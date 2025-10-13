@@ -15,10 +15,10 @@ module.exports = {
             '\n*Options*\n' +
             '- `-h, --help, help`  Show this help text.\n',
     restrictions: {
-        self: true,
-        group: false,
-        private: false,
-        selfMessage: true
+        onlySelf: true,
+        allowGroup: false,
+        allowPrivate: false,
+        allowSelfMessage: true
     },
     handler: async (message, client, config, args) => {
         await scheduleMessage(message, client, config, args);

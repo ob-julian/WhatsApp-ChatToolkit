@@ -8,6 +8,7 @@ module.exports = {
                 '\n*Description*\n' +
                 'List available commands or show extended help for a specific command. You can also use `!<command> -h`, `!<command> --help` or `!<command> help` for quick access.\n',
     restrictions: {
+        onlyContacts: true // to minimize potential abuse and therefore potential account suspension or banning by WhatsApp.
         // help is allowed everywhere, but only shows commands the user can actually use
     },
     // handler receives (message, client, config, args, commands)
@@ -15,7 +16,7 @@ module.exports = {
 
         // use utility to check command permissions
         function commandAllowed(mod) {
-            return utility.canUseCommand(mod, message);
+            return utility.canUseCommand(mod, message, client);
         }
 
         if (!args || args.length === 0) {

@@ -70,19 +70,23 @@ To add a new command, simply create a new file in the `commands` directory. Each
 
 ```javascript
 {
-  name: 'commandName', // The command's trigger word (e.g., 'status')
+  name: 'commandName', // The command's trigger word
+   // Optional: aliases that trigger the same command
+   aliases: ['short', 'alt'],
   description: 'Description of the command', // A short explanation of what the command does
   restrictions: {
-      self: true,        // If true, only messages sent by yourself (the bot account) can trigger this command
-      group: true,       // If true, the command can be used in group chats
-      private: true,     // If true, the command can be used in private (1:1) chats
-      selfMessage: true  // If true, the command can be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
+     onlySelf: true,        // If true, only messages sent by yourself (the bot account) can trigger this command
+     allowGroup: true,      // If true, the command can be used in group chats
+     allowPrivate: true,    // If true, the command can be used in private (1:1) chats
+     allowSelfMessage: true // If true, the command can be used in your own self-chat (messaging yourself). This is useful for sensitive commands, assuming the bot runs on your personal account.
   },
   execute: (message, client, config, args) => {
     // Your command logic here
   }
 }
 ```
+
+Short example: the Tic Tac Toe command is defined as `TicTacToe` but also provides an alias `ttt`, so both `!tictactoe` and `!ttt` will start the game.
 
 ### client.on interaction
 
