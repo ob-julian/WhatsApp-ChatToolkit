@@ -27,7 +27,7 @@ try {
             const commandModule = require(path.join(commandsPath, file));
             if (commandModule.name && typeof commandModule.handler === 'function') {
                 // store command for global dispatcher
-                commands.set(commandModule.name, commandModule);
+                commands.set(commandModule.name.toLowerCase(), commandModule);
             } else {
                 console.warn(`Command file ${file} missing required exports (name, handler).`);
             }
