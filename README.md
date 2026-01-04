@@ -31,7 +31,71 @@ I built this in a few hours to troll some friends because voice messages in a gr
 
 
 ## Installation
+### Using Docker (recommended for ease of use)
+1. Make sure you have Docker installed on your system. If not, download and install it from [here](https://www.docker.com/get-started).
+2. Clone the repository:
 
+   ```bash
+   git clone https://github.com/ob-julian/WhatsApp-ChatToolkit
+   ```
+3. Navigate to the project directory:
+
+   ```bash
+   cd WhatsApp-ChatToolkit
+   ```
+4. Build the Docker image:
+
+   ```bash
+   docker build -t whatsapp-chattoolkit .
+   ```
+
+5. **First Startup (Interactive Mode):**
+
+   The first time you start the bot, you need to scan the WhatsApp QR code. Run the container interactively so you can see the QR code in the logs:
+
+   ```bash
+   docker run -it --rm whatsapp-chattoolkit
+   ```
+   This will start the bot and print the QR code to the terminal. Scan it with your WhatsApp app to link your account.
+
+   After the initial setup, you can run the container in the background or with additional options as needed.
+
+6. **Subsequent Startups:**
+
+   After the initial setup, you can run the container in detached mode:
+
+   ```bash
+   docker run -d --name whatsapp-chattoolkit whatsapp-chattoolkit
+   ```
+
+   This will run the bot in the background.
+
+## Using Docker Compose for Permanent Config Storage
+
+To keep your configuration and temporary files persistent across container restarts, use Docker Compose. This will mount the local `config` and authentication directories to the container.
+
+1. Make sure you have Docker Compose installed.
+2. For first startup we again need to run it interactively to scan the QR code and configure the bot:
+
+   ```bash
+   docker compose run --rm whatsapp-chattoolkit
+   ```
+3. For subsequent startups, you can run the service in detached mode:
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. (Optional) Chron job example to restart the container every day at midnight:
+   > It seems that after some time the bot stops responding to messages. This is ment to counter that.
+
+   You can add the following line to your crontab (edit with `crontab -e`):
+   ```cron
+   0 0 * * * docker compose restart whatsapp-chattoolkit
+   ``` 
+
+
+### Manual Setup
 1. Install Node.js and npm if you haven't already:
 
    * [Download Node.js](https://nodejs.org/)
@@ -39,12 +103,12 @@ I built this in a few hours to troll some friends because voice messages in a gr
 2. Clone the repository:
 
    ```bash
-   git clone https://github.com/ob-julian/WhatsApp-SprachnachrichtCounter
+   git clone https://github.com/ob-julian/WhatsApp-ChatToolkit
    ```
 3. Navigate to the project directory:
 
    ```bash
-   cd WhatsApp-SprachnachrichtCounter
+   cd WhatsApp-ChatToolkit
    ```
 4. Install the dependencies:
 
@@ -58,7 +122,6 @@ I built this in a few hours to troll some friends because voice messages in a gr
    node .
    ```
 6. Oftentimes, you need to download specific libraries if your system does not have Chromium installed. And even then, you might need to install a few more libraries. If you run into issues, please refer to the [Puppeteer troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
-
 
 ## Extending the Script
 
