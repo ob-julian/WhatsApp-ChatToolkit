@@ -1,0 +1,9 @@
+services:
+  whatsapp-chattoolkit:
+    build: .
+    container_name: whatsapp-chattoolkit
+    volumes:
+      - ./config:/app/config
+      - ./.wwebjs_auth:/app/.wwebjs_auth
+      - ./.wwebjs_cache:/app/.wwebjs_cache
+    restart: unless-stopped
