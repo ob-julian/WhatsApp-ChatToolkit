@@ -371,5 +371,3 @@ module.exports = {
     drawTTTBoard,
     extractTTTBoardFromText
 };
-
-console.log(extractTTTBoardFromText(""));
