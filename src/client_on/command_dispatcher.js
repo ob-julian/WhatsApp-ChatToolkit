@@ -1,5 +1,7 @@
 const utility = require('../utility');
 
+// This module listens for incoming messages and dispatches commands accordingly.
+
 module.exports = {
     event: 'message_create',
     handler: async (message, client, config, commands) => {
