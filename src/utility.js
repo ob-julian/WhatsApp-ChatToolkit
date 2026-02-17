@@ -49,7 +49,11 @@ async function sendMessageAtDate(client, config, chatID, text, date, media) {
         return await _sendNow(client, chatID, text, media);
     }
     setTimeout(async () => {
-        await _sendNow(client, chatID, text, media);
+        try {
+            await _sendNow(client, chatID, text, media);
+        } catch (err) {
+            console.error(`Failed to send scheduled message to ${chatID}`);
+        }
         // removing from config.scheduledMessages here otherwise it will be sent again after every restart
         if (config && Array.isArray(config.scheduledMessages)) {
             config.scheduledMessages = config.scheduledMessages.filter(item => !(item.chatID === chatID && item.scheduledTime === date.getTime() && item.finalMessage === text));
